@@ -5,21 +5,31 @@
 @section('content')
     <style>
         .kanban-column {
-            background-color: #f8f9fa;
+            background: #0f172a;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
             height: 100%;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
         }
 
         .kanban-list {
             min-height: 500px;
-            background-color: #e9ecef;
-            border-radius: 5px;
+            background: #111827;
+            border-radius: 10px;
             padding: 10px;
+            border: 1px dashed rgba(255,255,255,0.08);
         }
 
         .kanban-item {
             cursor: move;
+            background: #1f2937;
+            color: #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .kanban-item .card-body {
+            background: transparent;
         }
 
         .kanban-item.invisible {

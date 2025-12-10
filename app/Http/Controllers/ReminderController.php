@@ -35,11 +35,13 @@ class ReminderController extends Controller
 
     public function edit(Reminder $reminder)
     {
+        $this->authorizeReminder($reminder);
         return view('reminders.edit', compact('reminder'));
     }
 
     public function update(Request $request, Reminder $reminder)
     {
+        $this->authorizeReminder($reminder);
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -54,7 +56,13 @@ class ReminderController extends Controller
 
     public function destroy(Reminder $reminder)
     {
+        $this->authorizeReminder($reminder);
         $reminder->delete();
         return redirect()->route('reminders.index')->with('success', 'Reminder deleted successfully.');
+    }
+
+    private function authorizeReminder(Reminder $reminder): void
+    {
+        abort_unless($reminder->user_id === Auth::id(), 403);
     }
 }

@@ -44,7 +44,11 @@ class Project extends Model
         return $this->hasMany(File::class);
     }
 
-    public function getStatusAttribute()
+    /**
+     * Computed status based on dates and task completion.
+     * Leaves the persisted `status` column untouched for forms/filters.
+     */
+    public function getComputedStatusAttribute()
     {
         $today = Carbon::now();
 
@@ -62,11 +66,22 @@ class Project extends Model
 
     public function teamProjects()
     {
-        return $this->belongsToMany(ProjectTeam::class, 'project_teams', 'project_id', 'user_id');
+        // Alias kept for existing controller usage; maps project members (users)
+        return $this->belongsToMany(User::class, 'project_teams', 'project_id', 'user_id');
     }
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'project_teams', 'project_id', 'user_id');
+    }
+
+    public function userIsMember(User $user): bool
+    {
+        return $this->users()->whereKey($user->id)->exists();
+    }
+
+    public function isAccessibleBy(User $user): bool
+    {
+        return $this->user_id === $user->id || $this->userIsMember($user);
     }
 }

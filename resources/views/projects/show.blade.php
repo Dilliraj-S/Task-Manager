@@ -22,7 +22,7 @@
                         <p class="card-text"><strong>End Date:</strong>
                             {{ \Carbon\Carbon::parse($project->end_date)->format('Y-m-d') }}</p>
                         <p class="card-text"><strong>Status:</strong>
-                            {{ $project->status == 'pending' ? 'Pending' : ($project->status == 'on_going' ? 'In Progress' : 'Completed') }}
+                            {{ $project->computed_status == 'pending' ? 'Pending' : ($project->computed_status == 'on_going' ? 'In Progress' : ($project->computed_status == 'unfinished' ? 'Unfinished' : 'Completed')) }}
                         </p>
                         <p class="card-text"><strong>Budget:</strong> ${{ $project->budget }}</p>
 
@@ -57,9 +57,20 @@
                                     <div class="card mb-3">
                                         <div class="row g-0">
                                             <div class="col-md-12">
-                                                <div class="card-body">
-                                                    <p class="card-title fw-bolder">{{ $user->name }}</p>
-                                                    <p class="card-text">{{ $user->email }}</p>
+                                                <div class="card-body d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <p class="card-title fw-bolder mb-1">{{ $user->name }}</p>
+                                                        <p class="card-text mb-0">{{ $user->email }}</p>
+                                                    </div>
+                                                    @if(Auth::id() === $project->user_id && $user->id !== $project->user_id)
+                                                        <form action="{{ route('projects.removeMember', [$project->id, $user->id]) }}" method="POST" onsubmit="return confirm('Remove this member?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-person-dash"></i> Remove
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

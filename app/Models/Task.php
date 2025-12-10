@@ -46,4 +46,14 @@ class Task extends Model
     {
         return $this->hasMany(ChecklistItem::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->orderBy('created_at', 'desc');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(TaskAttachment::class)->orderBy('created_at', 'desc');
+    }
 }

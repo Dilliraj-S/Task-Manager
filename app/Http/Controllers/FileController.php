@@ -23,7 +23,7 @@ class FileController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,doc,docx,pdf,txt,html,css,js,php,java,c,cpp',
+            'file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx,txt|max:5120',
             'type' => 'required|string|in:project,docs,txt,code,image',
         ]);
 
@@ -40,14 +40,16 @@ class FileController extends Controller
 
     public function edit(File $file)
     {
+        $this->authorizeFile($file);
         return view('files.edit', compact('file'));
     }
 
     public function update(Request $request, File $file)
     {
+        $this->authorizeFile($file);
         $request->validate([
             'name' => 'required|string|max:255',
-            'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,doc,docx,pdf,txt,html,css,js,php,java,c,cpp',
+            'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx,txt|max:5120',
             'type' => 'required|string|in:project,docs,txt,code,image',
         ]);
 
@@ -65,8 +67,14 @@ class FileController extends Controller
 
     public function destroy(File $file)
     {
+        $this->authorizeFile($file);
         Storage::disk('public')->delete($file->path);
         $file->delete();
         return redirect()->route('files.index')->with('success', 'File deleted successfully.');
+    }
+
+    private function authorizeFile(File $file): void
+    {
+        abort_unless($file->user_id === Auth::id(), 403);
     }
 }

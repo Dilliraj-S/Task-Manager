@@ -68,11 +68,13 @@ class RoutineController extends Controller
 
     public function edit(Routine $routine)
     {
+        $this->authorizeRoutine($routine);
         return view('routines.edit', compact('routine'));
     }
 
     public function update(Request $request, Routine $routine)
     {
+        $this->authorizeRoutine($routine);
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -102,6 +104,7 @@ class RoutineController extends Controller
 
     public function destroy(Routine $routine)
     {
+        $this->authorizeRoutine($routine);
         $routine->delete();
         return redirect()->route('routines.index')->with('success', 'Routine deleted successfully.');
     }
@@ -131,5 +134,10 @@ class RoutineController extends Controller
     {
         $monthlyRoutines = Auth::user()->routines()->where('frequency', 'monthly')->get();
         return view('routines.monthly', compact('monthlyRoutines'));
+    }
+
+    private function authorizeRoutine(Routine $routine): void
+    {
+        abort_unless($routine->user_id === Auth::id(), 403);
     }
 }

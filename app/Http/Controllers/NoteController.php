@@ -35,11 +35,13 @@ class NoteController extends Controller
 
     public function edit(Note $note)
     {
+        $this->authorizeNote($note);
         return view('notes.edit', compact('note'));
     }
 
     public function update(Request $request, Note $note)
     {
+        $this->authorizeNote($note);
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -54,7 +56,13 @@ class NoteController extends Controller
 
     public function destroy(Note $note)
     {
+        $this->authorizeNote($note);
         $note->delete();
         return redirect()->route('notes.index')->with('success', 'Note deleted successfully.');
+    }
+
+    private function authorizeNote(Note $note): void
+    {
+        abort_unless($note->user_id === Auth::id(), 403);
     }
 }

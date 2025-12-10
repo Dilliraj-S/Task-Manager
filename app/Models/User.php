@@ -20,6 +20,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'avatar',
+        'theme_preference',
+        'density_preference',
+        'timezone',
+        'date_format',
     ];
 
     /**
@@ -89,5 +95,25 @@ class User extends Authenticatable
     public function projectMembers()
     {
         return $this->belongsToMany(Project::class, 'project_teams', 'user_id', 'project_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === 'manager' || $this->isAdmin();
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role || ($role === 'manager' && $this->isAdmin());
     }
 }

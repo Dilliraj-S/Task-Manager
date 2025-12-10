@@ -14,6 +14,9 @@ class ChecklistItemController extends Controller
             'task_id' => 'required|exists:tasks,id',
         ]);
 
+        $task = Task::findOrFail($request->task_id);
+        $this->authorizeTask($task);
+
         $checklistItem = ChecklistItem::create([
             'task_id' => $request->task_id,
             'name' => $request->name,
@@ -28,8 +31,9 @@ class ChecklistItemController extends Controller
 
     public function updateStatus(ChecklistItem $checklistItem)
     {
+        $this->authorizeChecklistItem($checklistItem);
         $checklistItem->update([
-            'completed' => !$checklistItem->completed === true ? 1 : 0, 
+            'completed' => !$checklistItem->completed, 
         ]);
         return response()->json([
             'success' => true,
@@ -39,6 +43,7 @@ class ChecklistItemController extends Controller
 
     public function update(Request $request, ChecklistItem $checklistItem)
     {
+        $this->authorizeChecklistItem($checklistItem);
         $checklistItem->update([
             'completed' => $request->has('completed'),
             'name' => $request->name,
@@ -48,9 +53,20 @@ class ChecklistItemController extends Controller
 
     public function destroy(ChecklistItem $checklistItem)
     {
+        $this->authorizeChecklistItem($checklistItem);
         $checklistItem->delete();
         return response()->json([
             'success' => true,
         ]);
+    }
+
+    private function authorizeChecklistItem(ChecklistItem $checklistItem): void
+    {
+        $this->authorizeTask($checklistItem->task);
+    }
+
+    private function authorizeTask(Task $task): void
+    {
+        abort_unless($task->project->isAccessibleBy(auth()->user()), 403);
     }
 }

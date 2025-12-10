@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Task Manager</title>
+    <title>Login | Task Manager</title>
     <link rel="shortcut icon" href="{{ asset('assets/img/logo-circle.png') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,68 +18,94 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f8f9fa;
+            background: radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.18), transparent 40%),
+                radial-gradient(circle at 80% 0%, rgba(124, 58, 237, 0.22), transparent 45%),
+                #0b1020;
             font-family: 'Poppins', sans-serif;
+            color: #e5e7eb;
         }
 
+        .card {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0f172a;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+        }
 
         .card-header {
-            background-color: #495057;
+            background: linear-gradient(135deg, #06b6d4, #7c3aed);
             color: white;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            font-size: 1.25rem;
-            font-weight: 500;
-        }
-        .card-header img{
-            filter: invert(100%) brightness(200%);
+            font-size: 1.15rem;
+            font-weight: 600;
         }
 
         .btn-primary {
-            background-color: #495057;
-            border-color: #495057;
-            font-weight: 500;
+            background: linear-gradient(135deg, #06b6d4, #7c3aed);
+            border: none;
+            font-weight: 600;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: #343a40;
-            border-color: #343a40;
+            filter: brightness(1.05);
         }
 
         .form-control {
-            border-radius: 0.5rem;
+            border-radius: 10px;
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e5e7eb;
         }
 
-        .form-check-label {
-            font-weight: 500;
+        .form-control:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 0.2rem rgba(6, 182, 212, 0.2);
         }
 
         .text-danger {
             font-size: 0.875rem;
         }
+
+        label,
+        .form-check-label,
+        .card-body,
+        .card-footer {
+            color: #e5e7eb;
+        }
     </style>
 </head>
+
 <body>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-5">
             <div class="card border-0 shadow-sm">
                 <div class="card-header text-center p-4 fs-1">
-                    <img src="{{ asset('assets/img/logo-horizontal.png') }}" class="img-fluid" alt="task manager">
+                        <div class="fw-bold">Task Manager</div>
+                        <div class="small opacity-75">Build. Deploy. Scale.</div>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" placeholder="admin@example.com" required autofocus>
+                                <input type="email" name="email" id="email" class="form-control"
+                                    placeholder="admin@example.com" required autofocus>
                             @error('email')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
                             <input type="password" name="password" id="password" class="form-control" required>
+                                    <button type="button" class="btn btn-secondary" id="toggle-password"
+                                        aria-label="Show password">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             @error('password')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -86,13 +115,16 @@
                             <label for="remember" class="form-check-label">Remember Me</label>
                         </div>
                         <div class="d-grid mb-4">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                                <button type="submit" class="btn btn-primary">Sign in</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="card-footer text-center">
-                   <p>Developed by: <a class="text-decoration-none text-black" href="https://github.com/arafat-web" target="_blank">Arafat Hossain Ar</a></p>
+                        <div class="mb-2">
+                            <small>Don't have an account? <a href="{{ route('register') }}">Create one</a></small>
+                        </div>
+                        <p class="mb-0 text-muted">Built by Dilliraj</p>
                 </div>
             </div>
         </div>
@@ -100,5 +132,16 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const pwd = document.getElementById('password');
+        const toggle = document.getElementById('toggle-password');
+        toggle?.addEventListener('click', () => {
+            const isText = pwd.type === 'text';
+            pwd.type = isText ? 'password' : 'text';
+            toggle.innerHTML = isText ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            toggle.setAttribute('aria-label', isText ? 'Show password' : 'Hide password');
+        });
+    </script>
 </body>
+
 </html>
